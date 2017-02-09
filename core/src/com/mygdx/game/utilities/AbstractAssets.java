@@ -5,6 +5,8 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -65,33 +67,58 @@ public class AbstractAssets {
 
 
     // load texture atlas
-    public void loadTextureAtlas(String name){
-        assetManager.load(name+".atlas",TextureAtlas.class);
-        textureAtlases.add(name);
+    public void loadAtlases(String... names){
+        for (String name: names) {
+            assetManager.load(name + ".atlas", TextureAtlas.class);
+            textureAtlases.add(name);
+        }
     }
     // get texture atlases and extract the texture regions
     // simple atlas region or array of atlas regions (animations)
     // note that atlas region extends texture region
-    public void getTextureAtlases(){
+    public void getAtlases(){
+        TextureAtlas atlas;
+        Array<TextureAtlas.AtlasRegion>newRegions;
+        String regionName;
         for (String atlasName:textureAtlases){
-            TextureAtlas atlas=assetManager.get(atlasName+".atlas",TextureAtlas.class);
-            Array<TextureAtlas.AtlasRegion>newRegions=atlas.getRegions();
+            atlas=assetManager.get(atlasName+".atlas",TextureAtlas.class);
+            newRegions=atlas.getRegions();
             for (TextureAtlas.AtlasRegion newRegion:newRegions){
-                String name=newRegion.name;
+                regionName=newRegion.name;
                 if (newRegion.index==-1){                       // a single image of given name
-                    atlasRegions.put(name,newRegion);
+                    atlasRegions.put(regionName,newRegion);
                 }
-                else{
-                    if (!atlasRegionArrays.containsKey(name)){
-                        atlasRegionArrays.put(name,new Array<TextureAtlas.AtlasRegion>());
+                else{                     // multiple images nameUnderscoreFramenumber.png such as animation_01.png, etc.
+                    if (!atlasRegionArrays.containsKey(regionName)){
+                        atlasRegionArrays.put(regionName,atlas.findRegions(regionName));
                     }
-                    Array<TextureAtlas.AtlasRegion>regions=atlasRegionArrays.get(name);
-                    regions.set(newRegion.index,newRegion);
-
                 }
             }
-
         }
+    }
+
+    public TextureAtlas.AtlasRegion getAtlasRegion(String name){
+        return atlasRegions.get(name);
+    }
+
+
+    public Array<TextureAtlas.AtlasRegion> getAtlasRegionArray(String name){
+        return atlasRegionArrays.get(name);
+    }
+
+    public Animation createAnimation(float frameDuration,String name,Animation.PlayMode playMode){
+        return new Animation(frameDuration,getAtlasRegionArray(name),playMode);
+    }
+
+
+    public Sprite createSprite(String regionName){
+        return new Sprite(getAtlasRegion(regionName));
+    }
+
+    public Sprite createCenteredSprite(String regionName){
+        Sprite sprite=createSprite(regionName);
+        sprite.setOriginCenter();
+        return sprite;
     }
 
 

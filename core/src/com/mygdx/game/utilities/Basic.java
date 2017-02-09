@@ -5,7 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 /**
@@ -115,5 +117,24 @@ public class Basic {
      */
     public static float getTrueDeltaTime() {
         return Gdx.graphics.getRawDeltaTime();
+    }
+
+    // sprites: set/get position of center
+
+    public static void setCenter(Sprite sprite, Vector2 position){
+        sprite.setCenter(position.x,position.y);
+    }
+
+    public static void setCenter(Sprite sprite, float x,float y){
+        sprite.setCenter(x,y);
+    }
+
+    public static Vector2 getCenter(Sprite sprite,Vector2 position){
+        position.set(sprite.getX()+sprite.getOriginX(),sprite.getY()+sprite.getOriginY());
+        return position;
+    }
+
+    public static Vector2 getCenter(Sprite sprite){
+        return new Vector2(sprite.getX()+sprite.getOriginX(),sprite.getY()+sprite.getOriginY());
     }
 }
