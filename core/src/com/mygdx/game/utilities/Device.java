@@ -1,9 +1,12 @@
 package com.mygdx.game.utilities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -70,6 +73,12 @@ public class Device implements Disposable{
             orthogonalTiledMapRenderer.setView((OrthographicCamera)viewport.getCamera());
             disposer.add(orthogonalTiledMapRenderer,"tileMapRenderer");
         }
+    }
+
+    public FrameBuffer createFrameBuffer(Pixmap.Format format){
+        FrameBuffer frameBuffer= new FrameBuffer(format, Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),false);
+        disposer.add(frameBuffer,"frameBuffer");
+        return  frameBuffer;
     }
 
     @Override

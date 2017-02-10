@@ -1,15 +1,20 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.utilities.Basic;
 import com.mygdx.game.utilities.Device;
@@ -21,6 +26,8 @@ import java.util.Comparator;
  */
 
 public class GameScreen extends ScreenAdapter {
+    private static final float SCENE_WIDTH = 12.80f;
+    private static final float SCENE_HEIGHT = 7.20f;
 
     private TheGame theGame;
     private Device device;
@@ -31,6 +38,14 @@ public class GameScreen extends ScreenAdapter {
     private TextureAtlas.AtlasRegion dinosaurRegion;
     private TextureAtlas cavemanAtlas;
     private Animation cavemanWalk;
+
+    private OrthographicCamera camera;
+    private Viewport effectsViewport;
+    private ParticleEffect[] effects;
+    private int currentEffect;
+    private Vector3 touchPos;
+
+    private ParticleEffect particleEffect;
 
     Sprite sprite;
 
@@ -60,6 +75,15 @@ public class GameScreen extends ScreenAdapter {
              }
          });
          cavemanWalk=new Animation(0.3f,cavemanRegions, Animation.PlayMode.LOOP);
+
+         camera = new OrthographicCamera();
+         effectsViewport = new FitViewport(SCENE_WIDTH, SCENE_HEIGHT, camera);
+
+         particleEffect=new ParticleEffect();
+         particleEffect.load(Gdx.files.internal("test.particle"),Gdx.files.internal(""));
+         particleEffect.setPosition(SCENE_WIDTH/2,SCENE_HEIGHT/2);
+         particleEffect.start();
+
     }
 
     @Override
@@ -94,18 +118,34 @@ public class GameScreen extends ScreenAdapter {
 
         sprite.draw(spriteBatch);
         spriteBatch.draw(frame,200,200);
+        particleEffect.draw(spriteBatch,Gdx.graphics.getDeltaTime());
+
         spriteBatch.end();
+
     }
 
     @Override
     public void render(float delta){
+        if (particleEffect.isComplete()){
+            particleEffect.reset();
+        }
 
+        particleEffect.setPosition(0,0);
         viewport.apply(true);
 
-        Basic.clearBackground(Color.CYAN);
+        Basic.clearBackground(Color.BLACK);
 
         draw();
         drawDebug();
+        effectsViewport.apply(true);
+
+
+ //       spriteBatch.setProjectionMatrix(effectsViewport.getCamera().combined);
+ //       spriteBatch.begin();
+
+ //       spriteBatch.end();
+
+
     }
 
 }
