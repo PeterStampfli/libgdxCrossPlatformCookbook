@@ -13,9 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
-
-import java.util.HashMap;
-import java.util.Set;
+import com.badlogic.gdx.utils.ObjectMap;
 
 /**
  * Created by peter on 1/22/17.
@@ -25,12 +23,11 @@ public class AbstractAssets {
     AssetManager assetManager;
     public String soundFileType="wav";
     public String musicFileType="mp3";
-    private HashMap<String,Sound> soundHashMap =new HashMap<String, Sound>();
-    private HashMap<String,Music> musicHashMap =new HashMap<String, Music>();
-    private HashMap<String,TextureAtlas.AtlasRegion> atlasRegionHashMap =new HashMap<String, TextureAtlas.AtlasRegion>();
-    private HashMap<String,Array<TextureAtlas.AtlasRegion>> atlasRegionArrayHashMap =new HashMap<String,Array<TextureAtlas.AtlasRegion>>();
-    private Array<String> textureAtlases=new Array<String>();
-    private HashMap<String,TextureAtlas> atlasHashMap =new HashMap<String, TextureAtlas>();
+    private ObjectMap<String,Sound> soundMap =new ObjectMap<String, Sound>();
+    private ObjectMap<String,Music> musicMap =new ObjectMap<String, Music>();
+    private ObjectMap<String,TextureAtlas.AtlasRegion> atlasRegionMap =new ObjectMap<String, TextureAtlas.AtlasRegion>();
+    private ObjectMap<String,Array<TextureAtlas.AtlasRegion>> atlasRegionArrayMap =new ObjectMap<String, Array<TextureAtlas.AtlasRegion>>();
+    private ObjectMap<String,TextureAtlas> atlasMap =new ObjectMap<String, TextureAtlas>();
     private boolean soundIsOn=true;
 
 
@@ -71,8 +68,7 @@ public class AbstractAssets {
     public void loadAtlases(String... names){
         for (String name: names) {
             assetManager.load(name + ".atlas", TextureAtlas.class);
-            textureAtlases.add(name);
-            atlasHashMap.put(name,null);
+            atlasMap.put(name,null);
         }
     }
     // get texture atlases and extract the texture regions
@@ -82,18 +78,18 @@ public class AbstractAssets {
         TextureAtlas atlas;
         Array<TextureAtlas.AtlasRegion>newRegions;
         String regionName;
-        Set<String> atlasNames=atlasHashMap.keySet();
+        ObjectMap.Keys<String> atlasNames=atlasMap.keys();
         for (String atlasName:atlasNames){
             atlas=assetManager.get(atlasName+".atlas",TextureAtlas.class);
             newRegions=atlas.getRegions();
             for (TextureAtlas.AtlasRegion newRegion:newRegions){
                 regionName=newRegion.name;
                 if (newRegion.index==-1){                       // a single image of given name
-                    atlasRegionHashMap.put(regionName,newRegion);
+                    atlasRegionMap.put(regionName,newRegion);
                 }
                 else{                     // multiple images nameUnderscoreFramenumber.png such as animation_01.png, etc.
-                    if (!atlasRegionArrayHashMap.containsKey(regionName)){
-                        atlasRegionArrayHashMap.put(regionName,atlas.findRegions(regionName));
+                    if (!atlasRegionArrayMap.containsKey(regionName)){
+                        atlasRegionArrayMap.put(regionName,atlas.findRegions(regionName));
                     }
                 }
             }
@@ -101,12 +97,12 @@ public class AbstractAssets {
     }
 
     public TextureAtlas.AtlasRegion getAtlasRegion(String name){
-        return atlasRegionHashMap.get(name);
+        return atlasRegionMap.get(name);
     }
 
     // for animations
     public Array<TextureAtlas.AtlasRegion> getAtlasRegionArray(String name){
-        return atlasRegionArrayHashMap.get(name);
+        return atlasRegionArrayMap.get(name);
     }
 
     public Animation createAnimation(float frameDuration,String name,Animation.PlayMode playMode){
@@ -115,7 +111,7 @@ public class AbstractAssets {
 
     // for particle effects
     public TextureAtlas getAtlas(String name){
-        return atlasHashMap.get(name);
+        return atlasMap.get(name);
     }
 
     // create particle effect:
@@ -149,7 +145,7 @@ public class AbstractAssets {
         }
         assetManager.load(name,TiledMap.class);
     }
-    // soundHashMap and musicHashMap
+    // soundHashMap and musicMap
 
     public void setSoundIsOn(boolean value){
         soundIsOn=value;
@@ -159,43 +155,43 @@ public class AbstractAssets {
     public void addSounds(String... names){
         for (String name: names) {
             assetManager.load(name + "." + soundFileType, Sound.class);
-            soundHashMap.put(name, null);
+            soundMap.put(name, null);
         }
 
     }
 
     public void getSounds(){
-        Set<String> names= soundHashMap.keySet();
+        ObjectMap.Keys<String> names=soundMap.keys();
         for (String name:names) {
-            soundHashMap.put(name,assetManager.get(name+"."+soundFileType,Sound.class));
+            soundMap.put(name,assetManager.get(name+"."+soundFileType,Sound.class));
         }
     }
 
     public void playSound(String name){
         if (soundIsOn){
-            soundHashMap.get(name).play();
+            soundMap.get(name).play();
         }
     }
 
-    // musicHashMap
+    // musicMap
 
     // soundHashMap
     public void addMusics(String... names){
         for (String name: names) {
             assetManager.load(name + "." + musicFileType, Music.class);
-            musicHashMap.put(name, null);
+            musicMap.put(name, null);
         }
     }
 
     public void getMusics(){
-        Set<String> names= musicHashMap.keySet();
+        ObjectMap.Keys<String> names=musicMap.keys();
         for (String name:names) {
-            musicHashMap.put(name,assetManager.get(name+"."+musicFileType,Music.class));
+            musicMap.put(name,assetManager.get(name+"."+musicFileType,Music.class));
         }
     }
 
     public Music getMusic(String name){
-        return musicHashMap.get(name);
+        return musicMap.get(name);
     }
 
 
