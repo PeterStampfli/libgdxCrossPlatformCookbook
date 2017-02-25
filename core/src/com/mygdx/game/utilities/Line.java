@@ -15,7 +15,7 @@ public class Line {
     private boolean isHorizontal;
     private boolean invertedOrder;
 
-    public Line(int x1p, int y1p, int x2p, int y2p){
+    public Line(int x1p,int y1p,int x2p,int y2p){
         x1=x1p;
         y1=y1p;
         x2=x2p;
@@ -25,12 +25,15 @@ public class Line {
             invertedOrder=(x1>x2);
             exchangeEndpointsIfnotOriginalOrder();
             slope=((float)(y2-y1))/((float)(x2-x1));
-            Gdx.app.log("*",""+slope);
+            Gdx.app.log("invertedOrder",""+invertedOrder);
+            Gdx.app.log("slope",""+slope);
         }
         else {
             invertedOrder = (y1 > y2);
             exchangeEndpointsIfnotOriginalOrder();
             slope = ((float) (x2 - x1)) / ((float) (y2 - y1));
+            Gdx.app.log("invertedOrder",""+invertedOrder);
+            Gdx.app.log("slope",""+slope);
         }
     }
 
@@ -65,7 +68,7 @@ public class Line {
             Gdx.app.log("**",""+(slope*(x-x1)+y1));
         }
         else {
-            result=x-slope*(y-y1)-x1;
+            result=-(x-slope*(y-y1)-x1);
         }
         if (invertedOrder){
             result=-result;
@@ -73,18 +76,18 @@ public class Line {
         return result;
     }
 
-    public void show(Pixmap pixmap,int x,int y){
+    public void showDiagnostics(Pixmap pixmap,int x,int y){
         pixmap.setColor(Color.BLUE);
 
         pixmap.drawLine(x1,y1,x2,y2);
-        pixmap.setColor(Color.BLACK);
-        pixmap.drawPixel(x,Math.round(y1+slope*(x-x1)));
         if (isRelevant(x,y)) {
             pixmap.setColor(Color.GREEN);
             int d = Math.round(distance(x, y));
+            if (d<0){
+                pixmap.setColor(Color.RED);
+            }
             if (isHorizontal) {
                 if (invertedOrder){
-                    pixmap.setColor(Color.RED);
                     pixmap.drawLine(x, y,x,y+d );
 
                 }
@@ -94,6 +97,10 @@ public class Line {
             }
             else {
                 if (invertedOrder){
+                    pixmap.drawLine(x,y,x-d,y);
+                }
+                else {
+                    pixmap.drawLine(x,y,x+d,y);
 
                 }
 
@@ -101,6 +108,12 @@ public class Line {
         }
         pixmap.setColor(Color.BLACK);
         pixmap.drawPixel(x,y);
+        if (invertedOrder){
+            pixmap.drawPixel(x2, y2);
 
+        }
+        else {
+            pixmap.drawPixel(x1, y1);
+        }
     }
 }

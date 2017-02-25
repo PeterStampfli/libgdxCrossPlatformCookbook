@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -60,6 +61,8 @@ public class AbstractAssets {
     public  void loadMusic(String name){
         assetManager.load(name, Music.class);
     }
+
+    public void loadBitmapFont(String name) {assetManager.load(name,BitmapFont.class);}
 
     // special items
 
